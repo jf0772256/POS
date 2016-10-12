@@ -1,6 +1,6 @@
 '''
 Revised FDF POS database connection
-Version 0.2.0
+Version 0.3.8
 10/07/2016
 why a new file? we needed to clean up the code and get it working better than before
 '''
@@ -81,7 +81,7 @@ class dbControl():
         ## Use this function to write the data from the database tables to the database files
         write_JSON(filepath, data)
     def selectData(self, filepath):
-        ## Use this function to read trhe data from the database files into the database tables
+        ## Use this function to read the data from the database files into the database tables
         return read_JSON(filepath)
 
 class stringEncode():
@@ -164,15 +164,16 @@ class stringEncode():
             validBool=True                                  ## returns true if True
 
 
-## lass for Managers ##
+## Class for Managers ##
 ## ------------------------------------------------------------
 class Managers:
 
    def Prnt_Empl_Lst(self):
-      global Employee
-      for Empl in Employee.keys():
+      ## For the use of printing out of the available Employees ##
+      global Employee                                       ## set Global to table Employee for use in this code
+      for Empl in Employee:                          ## This line needs to be coreected
          print str(Empl) +": ",
-         for Empl1 in Employee[Empl].keys():
+         for Empl1 in Employee[Empl]:
             print Employee[Empl][Empl1],
          print ""
 
@@ -206,7 +207,8 @@ class Managers:
             print "You have entered an invalid Employee number. Please try again."
             self.Add_Manager()
       else:
-         print "You must be logged in as Super Admin User before you will be allowed to add managers. Logg off your user and log in as your Super Administrator to add a manager."
+         print "You must be logged in as Super Admin User before you will be allowed to add managers.",
+         print "Log off your user and log in as your Super Administrator to add a manager."
          AdminMenu()
       '''
       This function will require that you have Super Admin User logged in, this will limit the ability of the other managers from adding unauthorized employees
@@ -217,9 +219,9 @@ class Managers:
 
    def Prnt_Mngr_Lst(self):
       global Manager
-      for Mngr in Manager.keys():
+      for Mngr in Manager:
          print str(Mngr) +": ",
-         for Mngr1 in Manager[Mngr].keys():
+         for Mngr1 in Manager[Mngr]:
             print Manager[Mngr][Mngr1],
          print ""
 
@@ -230,7 +232,6 @@ class Managers:
          retVal=True
          return retVal
       elif MngrID in Manager:
-         print "Im here"
          if Manager[MngrID]["Active"]==True:
             retVal=True
             return retVal
