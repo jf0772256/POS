@@ -211,10 +211,8 @@ class Managers:
          print "Log off your user and log in as your Super Administrator to add a manager."
          AdminMenu()
       '''
-      This function will require that you have Super Admin User logged in, this will limit the ability of the other managers from adding unauthorized employees
-      as manager staff. the Super Admin User cannot be logged in at the sale ticket so you must have at least one other regular manager level person. Removing a
-      manager from being a manager either by termination or demotion either voluntary or involuntary will mark Active state to false, thus not being able to log
-      in as a manager or make sales transactions as a manager. DEFAULTS: Active=TRUE MgrLoggedIn=FALSE
+      This function will require that you have Super Admin User logged in, this was done to help limit the ability
+      of unauthorized manager adds.  DEFAULTS: Active=TRUE MgrLoggedIn=FALSE
       '''
 
    def Prnt_Mngr_Lst(self):
