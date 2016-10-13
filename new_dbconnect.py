@@ -1,7 +1,8 @@
 '''
 Revised FDF POS database connection
-Version 0.3.8
-10/07/2016
+Version 0.3.8.0001
+Created: 10/07/2016
+Last Revised: 10/13/2016
 why a new file? we needed to clean up the code and get it working better than before
 '''
 
@@ -139,29 +140,29 @@ class stringEncode():
         ##checks for invalid chars in  the test string and returns true or false
         invalChars=['+','\'','\"']                          ## list of 'invalid' chars
         maximumLen = 30                                     ## Maximum number of chars allowed
-        validBool = False                                   ## test Boolean
-        if len(String2Validate) > maximumLen:               ## checks for next validation value
-            validBool = False                               ## if too long return a false rating
+        validBool = False
+        if len(String2Validate) > maximumLen:
+            validBool = False
             return validBool                                ## should return false if caught here
-        if len(String2Validate) <= maximumLen:              ## checks if less than max,
-            i = 0                                           ## sets string iterator t0 0
-            while i < len(String2Validate):                 ## loop that while i less then len of string continues through
-                for x in range(0, len(invalChars)):         ## for loop to iterate through invalid char array
+        if len(String2Validate) <= maximumLen:
+            i = 0
+            while i < len(String2Validate):
+                for x in range(0, len(invalChars)):
                     char = String2Validate[i]               ## sets index of string i to char
-                    if invalChars[x] == chr(ord(char)):     ## looks to see if i and x are the same
+                    if invalChars[x] == chr(ord(char)):
                         validBool = False                   ## an invalid char was used and returns false
-                        return validBool                    ## returns false to caller as the string is containing an invalid char
-                        break                               ## stops loop
-                    else:                                   ## Else...
+                        return validBool
+                        break
+                    else:
                         if i == len(String2Validate)-1:     ## if at the end of the string and no invalid chars are caught
-                            validBool = True                ## set validBool to true
+                            validBool = True
                             return validBool                ## returns validBool if valid.
-                            break                           ## stops loop
+                            break
                         else:                               ## if not long enough return to top to continue processing
                             pass                            ## pass to next statement
-                i = i + 1                                   ## increments i for new run though
-        else:                                               ## if the two other tests fail then it is valid
-            validBool=True                                  ## returns true if True
+                i = i + 1
+        else:
+            validBool=True
 
 
 ## Class for Managers ##
@@ -170,38 +171,39 @@ class Managers:
 
    def Prnt_Empl_Lst(self):
       ## For the use of printing out of the available Employees ##
-      global Employee                                       ## set Global to table Employee for use in this code
-      for Empl in Employee:                          ## This line needs to be coreected
+      global Employee                                ## set Global to table Employee for use in this code
+      for Empl in Employee:                          ## used during employee table search
          print str(Empl) +": ",
          for Empl1 in Employee[Empl]:
             print Employee[Empl][Empl1],
          print ""
 
-   def ValidateEmpl(self, EmployeeNumber): ##internal validation to ensure that a valid Employee exists for use when adding managers only
+   def ValidateEmpl(self, EmployeeNumber):
+      ##internal validation to ensure that a valid Employee exists for use when adding managers only
       global Employee
-      retVal=False
+      retVal = False
       if EmployeeNumber in Employee:
-         if Employee[EmployeeNumber]["Active"]==True:
-            retVal=True
+         if Employee[EmployeeNumber]["Active"] == True:
+            retVal = True
             return retVal
          else:
-            retVal=False
+            retVal = False
             return retVal
       else:
-         retVal=False
+         retVal = False
          return retVal
 
    def Add_Manager(self):
-      global ManagerNum, Manager, Employee, IsSuper #to flip isManager switch
-      if IsSuper==True:
-         ManagerNum+=1
+      global ManagerNum, Manager, Employee, IsSuper    #to flip isManager switch
+      if IsSuper == True:                                #Always true
+         ManagerNum += 1
          self.Prnt_Empl_Lst()
-         EmployeeNum=int(raw_input("Please enter the new managers employee number: "))
-         isValid=self.ValidateEmpl(EmployeeNum)
-         if isValid==True:
-            Employee[EmployeeNum]["isManager"]=True
+         EmployeeNum = int(raw_input("Please enter the new managers employee number: "))
+         isValid = self.ValidateEmpl(EmployeeNum)
+         if isValid == True:
+            Employee[EmployeeNum]["isManager"] = True
             Password=raw_input("Please enter new password for the new manager: ")
-            Manager[ManagerNum]={"EmployeeNumber":EmployeeNum,"Password":Password,"MgrLogedIn":False, "Active":True} ## Read Block Comment on this##
+            Manager[ManagerNum] = {"EmployeeNumber": EmployeeNum,"Password": Password,"MgrLogedIn": False, "Active": True} ## Read Block Comment on this##
             AdminMenu()
          else:
             print "You have entered an invalid Employee number. Please try again."
@@ -212,7 +214,8 @@ class Managers:
          AdminMenu()
       '''
       This function will require that you have Super Admin User logged in, this was done to help limit the ability
-      of unauthorized manager adds.  DEFAULTS: Active=TRUE MgrLoggedIn=FALSE
+      of unauthorized manager adds. Creates a new row in the database table to reference back to employees table.
+      DEFAULTS: Active=TRUE MgrLoggedIn=FALSE
       '''
 
    def Prnt_Mngr_Lst(self):
@@ -225,41 +228,41 @@ class Managers:
 
    def ValidateMngr(self, MngrID): ##internal validation to ensure that a valid manager exists
       global Manager
-      retVal=False
-      if MngrID=="100": ## Super Admin Is ALWAYS Valid :)
-         retVal=True
+      retVal = False
+      if MngrID == "100": ## Super Admin Is ALWAYS Valid :)
+         retVal = True
          return retVal
       elif MngrID in Manager:
-         if Manager[MngrID]["Active"]==True:
-            retVal=True
+         if Manager[MngrID]["Active"] == True:
+            retVal = True
             return retVal
          else:
             print "I failed to find an active manager"
-            retVal=False
+            retVal = False
             return retVal
       else:
          print "I failed to find the manager that you were looking for."
-         retVal=False
+         retVal = False
          return retVal
 
    def Admin_Login(self,UserName,Password):
       global Manager, Employee, SuperAdmin, SU_Password, IsSuper
-      isValid=self.ValidateMngr(UserName)
-      Sucess=False
-      IsSuper=False
-      if isValid==True and UserName==SuperAdmin and SU_Password==Password:
+      isValid = self.ValidateMngr(UserName)
+      Sucess = False
+      IsSuper = False
+      if isValid == True and UserName==SuperAdmin and SU_Password==Password:
          print ""
          print "You have successfully logged in as Super Admin User."
-         Sucess=True
-         IsSuper=True
+         Sucess = True
+         IsSuper = True
          AdminMenu()
-      elif UserName==SuperAdmin and Password != SU_Password: # if wrong password entered for super user, fails, rather than error.
-         isValid=False
+      elif UserName == SuperAdmin and Password != SU_Password: # if wrong password entered for super user, fails, rather than error.
+         isValid = False
          print ""
          print "Your log in was unsuccessful."
-         Sucess=False
-      elif isValid==True and Manager[UserName]["Password"]==Password:
-         Manager[UserName]["MgrLogedIn"]=True
+         Sucess = False
+      elif isValid == True and Manager[UserName]["Password"] == Password:
+         Manager[UserName]["MgrLogedIn"] = True
          print ""
          fName = Employee[str(Manager[UserName]["EmployeeNumber"])]["FirstName"]
          lName = Employee[str(Manager[UserName]["EmployeeNumber"])]["LastName"]
@@ -269,39 +272,39 @@ class Managers:
       else:
          print ""
          print "Your log in was unsuccessful."
-         Sucess=False
+         Sucess = False
       return Sucess
 
    def Admin_Logoff(self, ManagerID):
       global Manager, Employee, SuperAdmin
-      isValid=self.ValidateMngr(ManagerID)
-      Success=True
-      if isValid==True and ManagerID==SuperAdmin:
+      isValid = self.ValidateMngr(ManagerID)
+      Success = True
+      if isValid == True and ManagerID == SuperAdmin:
          print ""
          print "You have successfully logged out, Super Admin User."
-         Success=True
+         Success = True
          return Success
-      elif isValid==True and Manager[ManagerID]["MgrLogedIn"]==True:
-         Manager[ManagerID]["MgrLogedIn"]=False
-         Success=True
+      elif isValid == True and Manager[ManagerID]["MgrLogedIn"] == True:
+         Manager[ManagerID]["MgrLogedIn"] = False
+         Success = True
          print ""
          print Employee[str(Manager[ManagerID]["EmployeeNumber"])]["FirstName"], Employee[str(Manager[ManagerID]["EmployeeNumber"])]["LastName"] + ", you have successfully logged off."
          return Success
       else:
          print ""
          print "Either you entered an invalid manager number or you were not logged in."
-         Success=False
+         Success = False
          return Success
 
    def Change_Man_Pswrd(self,UserName, oldPassword, newPassword):
       global Manager, SuperAdmin, SU_Password
-      isValid=self.ValidateMngr(UserName)
+      isValid = self.ValidateMngr(UserName)
       ##Goal: take username and old password to allow manager to change password##
-      if isValid==True and UserName==SuperAdmin and oldPassword==SU_Password:
+      if isValid == True and UserName == SuperAdmin and oldPassword == SU_Password:
          print "You may not change the Super Admin password here, Contact IT department or Helpdesk for how to change the SA user Password."
          AdminMenu()
-      elif isValid==True and Manager[UserName]["Password"]==oldPassword:
-         Manager[UserName]["Password"]=newPassword
+      elif isValid == True and Manager[UserName]["Password"] == oldPassword:
+         Manager[UserName]["Password"] = newPassword
          print "Password has been changed Sucessfully."
          AdminMenu()
       else:
