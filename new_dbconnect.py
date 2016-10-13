@@ -1,6 +1,6 @@
 '''
 Revised FDF POS database connection
-Version 0.3.8.0002
+Version 0.3.8.0003
 Created: 10/07/2016
 Last Revised: 10/13/2016
 why a new file? we needed to clean up the code and get it working better than before
@@ -50,6 +50,7 @@ Accnt_Num = 0               ## Customer-Account KeyID
 ## Classes Below Here
 ## ------------------------------------------------------------
 class dbControl():
+    """dbControl Class: Used to manipulate the database tables."""
     def write_JSON(self, fileName, PassData):
         with open(fileName,'wb') as f:
             json.dump(PassData,f)
@@ -86,6 +87,7 @@ class dbControl():
         return read_JSON(filepath)
 
 class stringEncode():
+    """String Encode/Decode Class: Used to Encode or Decode strings and returns them."""
     def __init__(self):
         self.my_Cypher = {"a":ord('a'), "b":ord('b'), "c":ord('c'), "d":ord('d'), "e":ord('e'), "f":ord('f'), "g":ord('g'), "h":ord('h'), "i":ord('i'), "j":ord('j'), "k":ord('k'), "l":ord('l'), "m":ord('m'), "n":ord('n'), "o":ord('o'), "p":ord('p'), "q":ord('q'), "r":ord('r'), "s":ord('s'), "t":ord('t'),
                "u":ord('u'), "v":ord('v'), "w":ord('w'), "x":ord('x'), "y":ord('y'), "z":ord('z'), "A":ord('A'), "B":ord('B'), "C":ord('C'), "D":ord('D'), "E":ord('E'), "F":ord('F'), "G":ord('G'), "H":ord('H'), "I":ord('I'), "J":ord('J'), "K":ord('K'), "L":ord('L'), "M":ord('M'), "N":ord('N'),
@@ -170,7 +172,7 @@ class stringEncode():
 ## Class for Managers ##
 ## ------------------------------------------------------------
 class Managers:
-
+    """Managers Class: Used to modify Managers Table"""
    def Prnt_Empl_Lst(self):
       ## For the use of printing out of the available Employees ##
       """Prints a list of available Employees, to be selected from to add to managers, This useage is for adding managers only."""
@@ -324,19 +326,23 @@ class Managers:
 ## Class for Employees ##
 ## ------------------------------------------------------------
 class Employees:
-
+    """Employees Class: Used to modify Employees Table"""
    #serch Strings for returning lists of equivilant values
    def Search_LN(self, LName): #searches for last name in the employees list
+      """Search employees in the table by last name."""
       global Employee
       return Employee.keys()[Employee.values().index(Lname)]
    def Search_FN(self, FName): #searches for First name in the employees list
+      """Search employees in the table by first name."""
       global Employee
       return Employee.keys()[Employee.values().index(Fname)]
-   def Search_LN(self, Phone): #searches for phone number in the employees list
+   def Search_PHN(self, Phone): #searches for phone number in the employees list
+      """Search employees in the table by phone number."""
       global Employee
       return Employee.keys()[Employee.values().index(Phone)]
 
    def ValidateEmpl(self, EmployeeNumber): ##internal validation to ensure that a valid Employee exists for use when adding managers only
+      """Internal validation to ensure that a valid Employee exists for use when adding managers only"""
       global Employee
       retVal=False
       if Employee.has_key(EmployeeNumber):
@@ -351,6 +357,7 @@ class Employees:
          return retVal
 
    def Prnt_Empl_Lst(self):
+      """Prints a sorted list of the Employees table data."""
       global Employee
       for key in sorted(Employee):
           print "%s: %s" % (key, Employee[key])
@@ -358,6 +365,7 @@ class Employees:
       AdminMenu()
 
    def Add_Empl(self):
+      """Process to add a new employee to the Employee Table."""
       global EmplNum, Employee,EmplInactive
       FirstName=raw_input("Please enter employees first name: ")
       LastName=raw_input("Please enter employees last name: ")
@@ -389,6 +397,7 @@ class Employees:
       '''
    def Remove_Empl(self):
       #flips is active switch to inactive.#
+      """Process to deactivate Employees."""
       global Employee, EmplNum
       self.Prnt_Empl_Lst()
       Termed=int(raw_input("Please enter the employee number of the employee being termed: "))
@@ -401,6 +410,7 @@ class Employees:
       AdminMenu()
 
    def get_Inact_Empl(self):
+      """Process to recover all inactive employees, also known as termed employees, used when adding or archiving data."""
       global Employee, EmplInactive
       for InvlEmpl in Employee.keys(): #every employee number is searched...
          if Employee[InvlEmpl]["Active"]==False and EmplInactive.has_key(InvlEmpl): #if they are not active, but in array already should skip
@@ -411,4 +421,30 @@ class Employees:
          print str(Empl) +": ",
          for Empl1 in EmplInactive[Empl].keys():
             print EmplInactive[Empl][Empl1],
+         print ""
+
+## Class for Inventory ##
+## ------------------------------------------------------------
+class Inventory:
+   """Inventory Class: Used to modify the Inventory Table."""
+   def Add_Inventory(self):
+      """Adds new inventory to the database data."""
+      global SKU, Invntry
+      SKU+=1
+      Inv_Title=raw_input("Enter the item description here: ")
+      Inv_Prce=float(raw_input("Enter Item Price here(000.00): "))
+      Inv_Quan=int(raw_input("How many of this item are there?: "))
+      Inv_Cat=raw_input("Enter the item category here: ")
+
+      Invntry[SKU]={"Name":Inv_Title,"Price":Inv_Prce,"Quanity":Inv_Quan,"Category":Inv_Cat}
+
+      AdminMenu()
+
+   def Prnt_Inv_Lst(self):
+      """Prints a list of active inventory items in the database."""
+      global Invntry
+      for Inv in Invntry.keys():
+         print str(Inv) +": ",
+         for Inv1 in Invntry[Inv].keys():
+            print Invntry[Inv][Inv1],
          print ""
