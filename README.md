@@ -24,3 +24,4 @@ v. 0.3.6 found correction from stackoverflow and implemented to current code to 
 v. 0.3.7 added additional features to program, search features and fixed JSON read and access
 v. 0.3.8 updated external db class file, in progress still, Implemented miniscule revision version to track smaller changes more readily.
 v. 0.3.8.0001 Still working on the external db, migrated Managers class to the new file and am working on it, also removed over-commented lines as well as few other minor fixes.
+v. 0.3.8.0002 added description strings to dbconnect to help guide users to create their own point of sales systems using the dbconnect Classes.

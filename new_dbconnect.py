@@ -1,6 +1,6 @@
 '''
 Revised FDF POS database connection
-Version 0.3.8.0001
+Version 0.3.8.0002
 Created: 10/07/2016
 Last Revised: 10/13/2016
 why a new file? we needed to clean up the code and get it working better than before
@@ -79,14 +79,15 @@ class dbControl():
         return data
 
     def updateData(self, filepath, data):
-        ## Use this function to write the data from the database tables to the database files
+        """Use this function to write the data from the database tables to the database files"""
         write_JSON(filepath, data)
     def selectData(self, filepath):
-        ## Use this function to read the data from the database files into the database tables
+        """Use this function to read the data from the database files into the database tables"""
         return read_JSON(filepath)
 
 class stringEncode():
-    my_Cypher={"a":ord('a'), "b":ord('b'), "c":ord('c'), "d":ord('d'), "e":ord('e'), "f":ord('f'), "g":ord('g'), "h":ord('h'), "i":ord('i'), "j":ord('j'), "k":ord('k'), "l":ord('l'), "m":ord('m'), "n":ord('n'), "o":ord('o'), "p":ord('p'), "q":ord('q'), "r":ord('r'), "s":ord('s'), "t":ord('t'),
+    def __init__(self):
+        self.my_Cypher = {"a":ord('a'), "b":ord('b'), "c":ord('c'), "d":ord('d'), "e":ord('e'), "f":ord('f'), "g":ord('g'), "h":ord('h'), "i":ord('i'), "j":ord('j'), "k":ord('k'), "l":ord('l'), "m":ord('m'), "n":ord('n'), "o":ord('o'), "p":ord('p'), "q":ord('q'), "r":ord('r'), "s":ord('s'), "t":ord('t'),
                "u":ord('u'), "v":ord('v'), "w":ord('w'), "x":ord('x'), "y":ord('y'), "z":ord('z'), "A":ord('A'), "B":ord('B'), "C":ord('C'), "D":ord('D'), "E":ord('E'), "F":ord('F'), "G":ord('G'), "H":ord('H'), "I":ord('I'), "J":ord('J'), "K":ord('K'), "L":ord('L'), "M":ord('M'), "N":ord('N'),
                "O":ord('O'), "P":ord('P'), "Q":ord('Q'), "R":ord('R'), "S":ord('S'), "T":ord('T'), "U":ord('U'), "V":ord('V'), "W":ord('W'), "X":ord('X'), ":":ord(':'), ";":ord(';'), "\"":ord('\"'), "\'":ord('\''), "<":ord('<'), ">":ord('>'), ",":ord(','), ".":ord('.'), "/":ord('/'), "?":ord('?'),
                "+":ord('+'), "!":ord('!'), "@":ord('@'), "#":ord('#'), "$":ord('$'), "%":ord('%'), "^":ord('^'), "&":ord('&'), "*":ord('*'), "(":ord('('), ")":ord(')'), "-":ord('-'), "_":ord('_'), "=":ord('='), "`":ord('`'), "~":ord('~'), " ":ord(' '),
@@ -107,8 +108,8 @@ class stringEncode():
                "\x90":ord('\x90'), "\x91":ord('\x91'), "\x92":ord('\x92'), "\x93":ord('\x93'), "\x94":ord('\x94'), "\x95":ord('\x95'), "\x96":ord('\x96'), "\x97":ord('\x97'), "\x98":ord('\x98'), "\x99":ord('\x99'), "\x9a":ord('\x9a'), "\x9b":ord('\x9b'), "\x9c":ord('\x9c'), "\x9d":ord('\x9d'), "\x9e":ord('\x9e'), "\x9f":ord('\x9f')}
 
     def encodeSting(self, String2Encode):
+        """Encodes string of chars. Use validateString() to ensure compatibility. Returns string."""
         ##shift patterns##
-        ##global my_Cypher
         Shift = 0
         tempStr = ""
         retVal = ""
@@ -118,12 +119,12 @@ class stringEncode():
             Shift = ord(ch) + (len(String2Encode) + m)
             i = chr(Shift)
             tempStr = str(i)
-            retVal = retVal + chr(my_Cypher[tempStr])
+            retVal = retVal + chr(self.my_Cypher[tempStr])
         return retVal
 
     def decodeString(self, String2Decode):
+        """Decodes an encoded string of chars encoded by the encodeString() process. Returns string."""
         ##shift pattern reversed##
-        global my_Cypher
         Shift = 0
         tempStr = ""
         retVal=""
@@ -133,10 +134,11 @@ class stringEncode():
             Shift = ord(ch)-(len(String2Decode)+ m)
             i = chr(Shift)
             tempStr = str(i)
-            retVal = retVal + chr(my_Cypher[tempStr])
+            retVal = retVal + chr(self.my_Cypher[tempStr])
         return retVal
 
     def validateString(self, String2Validate):
+        """This procedure takes a string of chars and runs them against checks to ensure compatibility: Returns True or False; Ture values passed, false values failed."""
         ##checks for invalid chars in  the test string and returns true or false
         invalChars=['+','\'','\"']                          ## list of 'invalid' chars
         maximumLen = 30                                     ## Maximum number of chars allowed
@@ -171,6 +173,7 @@ class Managers:
 
    def Prnt_Empl_Lst(self):
       ## For the use of printing out of the available Employees ##
+      """Prints a list of available Employees, to be selected from to add to managers, This useage is for adding managers only."""
       global Employee                                ## set Global to table Employee for use in this code
       for Empl in Employee:                          ## used during employee table search
          print str(Empl) +": ",
@@ -180,6 +183,7 @@ class Managers:
 
    def ValidateEmpl(self, EmployeeNumber):
       ##internal validation to ensure that a valid Employee exists for use when adding managers only
+      """Validates validity of selection to ensure that the employee actually exists."""
       global Employee
       retVal = False
       if EmployeeNumber in Employee:
@@ -194,6 +198,7 @@ class Managers:
          return retVal
 
    def Add_Manager(self):
+      """Adds a new manager to the Manager table."""
       global ManagerNum, Manager, Employee, IsSuper    #to flip isManager switch
       if IsSuper == True:                                #Always true
          ManagerNum += 1
@@ -219,6 +224,7 @@ class Managers:
       '''
 
    def Prnt_Mngr_Lst(self):
+      """Prints a list of current Managers in the Manager table."""
       global Manager
       for Mngr in Manager:
          print str(Mngr) +": ",
@@ -227,6 +233,7 @@ class Managers:
          print ""
 
    def ValidateMngr(self, MngrID): ##internal validation to ensure that a valid manager exists
+      """Validates manager number sent from the client application, to ensure manager actually exists."""
       global Manager
       retVal = False
       if MngrID == "100": ## Super Admin Is ALWAYS Valid :)
@@ -246,6 +253,7 @@ class Managers:
          return retVal
 
    def Admin_Login(self,UserName,Password):
+      """Admin Log In process: requires Manager Number and Password. Returns Bool True=if success, else false if login failed."""
       global Manager, Employee, SuperAdmin, SU_Password, IsSuper
       isValid = self.ValidateMngr(UserName)
       Sucess = False
@@ -276,6 +284,7 @@ class Managers:
       return Sucess
 
    def Admin_Logoff(self, ManagerID):
+      """Log off Process. Requires Manager number, returns bool True = sucess, else false = unsuccessful."""
       global Manager, Employee, SuperAdmin
       isValid = self.ValidateMngr(ManagerID)
       Success = True
@@ -297,6 +306,7 @@ class Managers:
          return Success
 
    def Change_Man_Pswrd(self,UserName, oldPassword, newPassword):
+      """Process to allow managers to change their passwords. Requires manager number, the old password, and the new password."""
       global Manager, SuperAdmin, SU_Password
       isValid = self.ValidateMngr(UserName)
       ##Goal: take username and old password to allow manager to change password##
@@ -310,3 +320,95 @@ class Managers:
       else:
          print "Your Username or Password didn't Match records."
          AdminMenu()
+
+## Class for Employees ##
+## ------------------------------------------------------------
+class Employees:
+
+   #serch Strings for returning lists of equivilant values
+   def Search_LN(self, LName): #searches for last name in the employees list
+      global Employee
+      return Employee.keys()[Employee.values().index(Lname)]
+   def Search_FN(self, FName): #searches for First name in the employees list
+      global Employee
+      return Employee.keys()[Employee.values().index(Fname)]
+   def Search_LN(self, Phone): #searches for phone number in the employees list
+      global Employee
+      return Employee.keys()[Employee.values().index(Phone)]
+
+   def ValidateEmpl(self, EmployeeNumber): ##internal validation to ensure that a valid Employee exists for use when adding managers only
+      global Employee
+      retVal=False
+      if Employee.has_key(EmployeeNumber):
+         if Employee[EmployeeNumber]["Active"]==True:
+            retVal=True
+            return retVal
+         else:
+            retVal=False
+            return retVal
+      else:
+         retVal=False
+         return retVal
+
+   def Prnt_Empl_Lst(self):
+      global Employee
+      for key in sorted(Employee):
+          print "%s: %s" % (key, Employee[key])
+      print ""
+      AdminMenu()
+
+   def Add_Empl(self):
+      global EmplNum, Employee,EmplInactive
+      FirstName=raw_input("Please enter employees first name: ")
+      LastName=raw_input("Please enter employees last name: ")
+      Phone=raw_input("Please enter employees phone number: ")
+
+      reHireEmpl = False
+      for IE_Key in EmplInactive.keys():
+         if EmplInactive[IE_Key]["FirstName"]==FirstName and EmplInactive[IE_Key]["LastName"]==LastName and EmplInactive[IE_Key]["Phone"]==Phone:
+            del EmplInactive[IE_Key]
+            Employee[IE_Key]["Active"]=True
+            reHireEmpl = True
+            break
+         else:
+            reHireEmpl = False
+      ##if there is no value then create a new entry##
+      if reHireEmpl == False:
+         EmplNum+=1
+         Employee[EmplNum]={"FirstName":FirstName,"LastName":LastName,"Phone":Phone, "Active":True, "isManager":False} ## read following block comment on this##
+      else:
+         print "There was an error in processing, please check all the information that you have entered and try again."
+      print ""
+      AdminMenu()
+      '''
+      Pretty much most is self explanitory, employee name, and phone, may add address here too... Important parts are the last three, Logged in#not yet added#
+      Active meaning that the employee is a member of the corporation and not been termed either voluntary or involuntary. isManager is the designation that
+      attaches employee to managers que, as a manager additional options become avail if logged in... employee and manager staff had seperate log ins and may
+      proocess transactions as employee or as manager depending on log in status. Removal of employees can be done by manager level staff, However only marks
+      Active status false. can be reactivated later date if needs be. DEFAULTS: Active=TRUE IsManager=FALSE LoggedIn=FALSE*when applied
+      '''
+   def Remove_Empl(self):
+      #flips is active switch to inactive.#
+      global Employee, EmplNum
+      self.Prnt_Empl_Lst()
+      Termed=int(raw_input("Please enter the employee number of the employee being termed: "))
+      isValid=self.ValidateEmpl(Termed) #ensure a number entered exists
+      if isValid==True: # is a valid employee number
+         Employee[Termed]["Active"]=False #set active status == False
+         self.get_Inact_Empl() #iterates through entire list of employee and checks active status
+      else:
+         print "No such employee exists, please check the employee list and try again."
+      AdminMenu()
+
+   def get_Inact_Empl(self):
+      global Employee, EmplInactive
+      for InvlEmpl in Employee.keys(): #every employee number is searched...
+         if Employee[InvlEmpl]["Active"]==False and EmplInactive.has_key(InvlEmpl): #if they are not active, but in array already should skip
+            pass
+         elif Employee[InvlEmpl]["Active"]==False and EmplInactive.has_key(InvlEmpl)==False:#if they are not active, but nit in array, add to array
+            EmplInactive[InvlEmpl]=Employee[InvlEmpl]
+      for Empl in EmplInactive.keys(): ##Prints values in a neat list
+         print str(Empl) +": ",
+         for Empl1 in EmplInactive[Empl].keys():
+            print EmplInactive[Empl][Empl1],
+         print ""
