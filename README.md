@@ -26,4 +26,5 @@ v. 0.3.8 updated external db class file, in progress still, Implemented miniscul
 v. 0.3.8.0001 Still working on the external db, migrated Managers class to the new file and am working on it, also removed over-commented lines as well as few other minor fixes.<br>
 v. 0.3.8.0002 Added description strings to dbconnect to help guide users to create their own point of sales systems using the dbconnect Classes.<br>
 v. 0.3.8.0003 Added Class description strings, migrated Employees and Inventory classes to new_dbconnect and included description strings for them.<br>
-v. 0.3.8.0004 Corrected bug issue.
+v. 0.3.8.0004 Corrected bug issue.<br>
+v. 0.3.8.0005 Added new functions to the dbControl Class.

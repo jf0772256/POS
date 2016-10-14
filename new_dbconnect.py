@@ -1,6 +1,6 @@
 '''
 Revised FDF POS database connection
-Version 0.3.8.0004
+Version 0.3.8.0005
 Created: 10/07/2016
 Last Revised: 10/13/2016
 why a new file? we needed to clean up the code and get it working better than before
@@ -114,6 +114,86 @@ class dbControl():
     def selectData(self, filepath):
         """Use this function to read the data from the database files into the database tables"""
         return read_JSON(filepath)
+
+	def readAllDatabaseTables(self, Path):
+		##reads data from files##
+		"""Performs a mass read and update from the last saved database files into the """
+	    global Employee, EmplInactive, Manager, MngrInactive, Invntry, InvInactive
+	    global SalesInvoices, Customer_List, Customer_Account
+	    #set variables for numeric data lost when the POS is unloaded#
+	    global SKU, SalesTicketNum, EmplNum, ManagerNum, Cust_Num, Accnt_Num
+	    data={}
+	    ##savefilesJ##
+	    print "Loading data files into database ",
+	    Manager=savefilesJ.read_JSON(Path+"manager.json")
+	    print "++",
+	    Employee=savefilesJ.read_JSON(Path+"employee.json")
+	    print "++",
+	    MngrInactive=savefilesJ.read_JSON(Path+"mngrinactive.json")
+	    print "++",
+	    EmplInactive=savefilesJ.read_JSON(Path+"emplinactive.json")
+	    print "++",
+	    Invntry=savefilesJ.read_JSON(Path+"inventory.json")
+	    print "++",
+	    InvInactive=savefilesJ.read_JSON(Path+"invinact.json")
+	    print "++",
+	    SalesInvoices=savefilesJ.read_JSON(Path+"invoices.json")
+	    print "++",
+	    Customer_List=savefilesJ.read_JSON(Path+"clist.json")
+	    print "++",
+	    Customer_Account=savefilesJ.read_JSON(Path+"caccnt.json")
+	    print "++",
+	    data=savefilesJ.read_JSON(Path+"data.json")
+	    print "++",
+	    print "Loading of data has been completed"
+	    print "Loading system data variables ",
+	    SKU=data["SKUs"]
+	    print "++",
+	    SalesTicketNum=data["SalesTicketNumber"]
+	    print "++",
+	    EmplNum=data["Employee"]
+	    print "++",
+	    ManagerNum=data["Manager"]
+	    print "++",
+	    Cust_Num=data["Customer"]
+	    print "++",
+	    Accnt_Num=data["Account"]
+	    print "++",
+	    print "Loading of variables complete"
+
+	def updateAllDatabaseTables(self,Path):
+		##puts data into files##
+		"""Performs a mass write to the data files"""
+	    global Employee, EmplInactive, Manager, MngrInactive, Invntry, InvInactive
+	    global SalesInvoices, Customer_List, Customer_Account
+	    #set variables for numeric data lost when the POS is unloaded#
+	    global SKU, SalesTicketNum, EmplNum, ManagerNum, Cust_Num, Accnt_Num
+	    ##savefilesJ##
+	    print "Saving DataBase Files ",
+	    data={"SKUs":SKU,"SalesTicketNumber":SalesTicketNum,"Employee":EmplNum,"Manager":ManagerNum,"Customer":Cust_Num,"Account":Accnt_Num}
+	    print "++",
+	    savefilesJ.write_JSON(Path+"manager.json", Manager)
+	    print "++",
+	    savefilesJ.write_JSON(Path+"employee.json", Employee)
+	    print "++",
+	    savefilesJ.write_JSON(Path+"mngrinactive.json", MngrInactive)
+	    print "++",
+	    savefilesJ.write_JSON(Path+"emplinactive.json", EmplInactive)
+	    print "++",
+	    savefilesJ.write_JSON(Path+"inventory.json", Invntry)
+	    print "++",
+	    savefilesJ.write_JSON(Path+"invinact.json", InvInactive)
+	    print "++",
+	    savefilesJ.write_JSON(Path+"invoices.json", SalesInvoices)
+	    print "++",
+	    savefilesJ.write_JSON(Path+"clist.json", Customer_List)
+	    print "++",
+	    savefilesJ.write_JSON(Path+"caccnt.json", Customer_Account)
+	    print "++",
+	    savefilesJ.write_JSON(Path+"data.json", data)
+	    print "++",
+	    #this should write 9 files
+	    print "Files Saved Successfully"
 
 class stringEncode():
     """String Encode/Decode Class: Used to Encode or Decode strings and returns them."""
