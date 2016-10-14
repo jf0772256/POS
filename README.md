@@ -6,7 +6,7 @@ v. 0.1.0 Initial creation<br>
 v. 0.1.1 bug fixes<br>
 v. 0.1.2 more bug fixes<br>
 v. 0.1.4 dual release, tuned in for assignment and redesigned. Removed several features.<br>
-v. 0.2.1 dual release, major revision and non assignment project pick up, all 0.1.x depricated<br>
+v. 0.2.1 dual release, major revision and non assignment project pick up, all 0.1.x deprecated. <br>
 v. 0.2.2 bug and interface fix<br>
 v. 0.2.3 reintroduction of featured removed in version v.0.1.4<br>
 v. 0.2.4 simple authentication introduced to limit access to admin features<br>
@@ -17,7 +17,7 @@ v. 0.2.8 last update for a while, soon will be fixing for further feature releas
 v. 0.3.0 fully revised application moved to external single class, and referenced from a single application<br>
 v. 0.3.1 issue already uncovered, where all data completely lost if the application fails.<br>
 v. 0.3.2 bug fix for few things and fixed a few spelling errors, updated data access from arrays<br>
-v. 0.3.3 bug fix for erronious data retrieval and updates, added full admin menu and exit commands<br>
+v. 0.3.3 bug fix for erroneous data retrieval and updates, added full admin menu and exit commands<br>
 v. 0.3.4 corrected more bugs.<br>
 v. 0.3.5 updated to use data access to store data read writes from data base array tables. but there are issues with keys returned.<br>
 v. 0.3.6 found correction from stackoverflow and implemented to current code to strip unicode strings to ascii strings when using JSON<br>
@@ -29,3 +29,4 @@ v. 0.3.8.0003 Added Class description strings, migrated Employees and Inventory 
 v. 0.3.8.0004 Corrected bug issue.<br>
 v. 0.3.8.0005 Added new functions to the dbControl Class.
 v. 0.3.8.0006 More tab corrections...
+v. 0.3.8.0007 Added catch to prevent crashes if a very specific file wasn't in existence.

@@ -1,6 +1,6 @@
 '''
 Revised FDF POS database connection
-Version 0.3.8.0006
+Version 0.3.8.0007
 Created: 10/07/2016
 Last Revised: 10/14/2016
 why a new file? we needed to clean up the code and get it working better than before
@@ -84,7 +84,7 @@ class dbControl():
 	def read_JSON(self, fileName):
 		"""Use either updateData() or selectData() rather than this."""
 		with open(fileName,'rb') as f:
-			FileData = json_load_byteified(f)
+			FileData = self.json_load_byteified(f)
 		file.close(f)
 		return FileData
 
@@ -92,28 +92,29 @@ class dbControl():
 	##will replace read_JSON() for correct reads
 	def json_load_byteified(self, file_handle):
 		"""Use either updateData() or selectData() rather than this."""
-		return _byteify(json.load(file_handle, object_hook=_byteify),ignore_dicts=True)
+		return self._byteify(json.load(file_handle, object_hook = self._byteify),ignore_dicts=True)
 
 	def json_loads_byteified(self, json_text):
 		"""Use either updateData() or selectData() rather than this."""
-		return _byteify(json.loads(json_text, object_hook=_byteify),ignore_dicts=True)
+		return self._byteify(json.loads(json_text, object_hook = self._byteify),ignore_dicts=True)
 
 	def _byteify(self, data, ignore_dicts = False):
 		"""Use either updateData() or selectData() rather than this."""
 		if isinstance(data, unicode):
 			return data.encode('utf-8')
 		if isinstance(data, list):
-			return [ _byteify(item, ignore_dicts=True) for item in data ]
+			return [ self._byteify(item, ignore_dicts=True) for item in data ]
 		if isinstance(data, dict) and not ignore_dicts:
-			return { _byteify(key, ignore_dicts=True): _byteify(value, ignore_dicts=True) for key, value in data.iteritems() }
+			return { self._byteify(key, ignore_dicts=True): self._byteify(value, ignore_dicts=True) for key, value in data.iteritems() }
 		return data
 
 	def updateData(self, filepath, data):
 		"""Use this function to write the data from the database tables to the database files"""
-		write_JSON(filepath, data)
+		self.write_JSON(filepath, data)
+
 	def selectData(self, filepath):
 		"""Use this function to read the data from the database files into the database tables"""
-		return read_JSON(filepath)
+		return self.read_JSON(filepath)
 
 	def readAllDatabaseTables(self, Path):
 		##reads data from files##
@@ -122,44 +123,61 @@ class dbControl():
 		global SalesInvoices, Customer_List, Customer_Account
 		#set variables for numeric data lost when the POS is unloaded#
 		global SKU, SalesTicketNum, EmplNum, ManagerNum, Cust_Num, Accnt_Num
-		data={}
+		data = {}
 		##savefilesJ##
 		print "Loading data files into database ",
-		Manager=savefilesJ.read_JSON(Path+"manager.json")
+		Manager = self.selectData(Path + "manager.json")
 		print "++",
-		Employee=savefilesJ.read_JSON(Path+"employee.json")
+		Employee = self.selectData(Path + "employee.json")
 		print "++",
-		MngrInactive=savefilesJ.read_JSON(Path+"mngrinactive.json")
+		MngrInactive = self.selectData(Path + "mngrinactive.json")
 		print "++",
-		EmplInactive=savefilesJ.read_JSON(Path+"emplinactive.json")
+		EmplInactive = self.selectData(Path + "emplinactive.json")
 		print "++",
-		Invntry=savefilesJ.read_JSON(Path+"inventory.json")
+		Invntry = self.selectData(Path + "inventory.json")
 		print "++",
-		InvInactive=savefilesJ.read_JSON(Path+"invinact.json")
+		InvInactive = self.selectData(Path + "invinact.json")
 		print "++",
-		SalesInvoices=savefilesJ.read_JSON(Path+"invoices.json")
+		SalesInvoices = self.selectData(Path + "invoices.json")
 		print "++",
-		Customer_List=savefilesJ.read_JSON(Path+"clist.json")
+		Customer_List = self.selectData(Path + "clist.json")
 		print "++",
-		Customer_Account=savefilesJ.read_JSON(Path+"caccnt.json")
+		Customer_Account = self.selectData(Path + "caccnt.json")
 		print "++",
-		data=savefilesJ.read_JSON(Path+"data.json")
-		print "++",
-		print "Loading of data has been completed"
-		print "Loading system data variables ",
-		SKU=data["SKUs"]
-		print "++",
-		SalesTicketNum=data["SalesTicketNumber"]
-		print "++",
-		EmplNum=data["Employee"]
-		print "++",
-		ManagerNum=data["Manager"]
-		print "++",
-		Cust_Num=data["Customer"]
-		print "++",
-		Accnt_Num=data["Account"]
-		print "++",
-		print "Loading of variables complete"
+		if (OS.path.isfile(Path + "data.json")):
+			data = self.selectData(Path + "data.json")
+			print "++",
+			print " Loading of data has been completed"
+			print " Loading system data variables ",
+			SKU=data["SKUs"]
+			print "++",
+			SalesTicketNum=data["SalesTicketNumber"]
+			print "++",
+			EmplNum=data["Employee"]
+			print "++",
+			ManagerNum=data["Manager"]
+			print "++",
+			Cust_Num=data["Customer"]
+			print "++",
+			Accnt_Num=data["Account"]
+			print "++",
+			print " Loading of variables complete"
+		elif (OS.path.isfile(Path + "data.json") != True):
+			SKU = 0
+			print "++",
+			SalesTicketNum = 0
+			print "++",
+			EmplNum = 999
+			print "++",
+			ManagerNum = 100
+			print "++",
+			Cust_Num = 0
+			print "++",
+			Accnt_Num = 0
+			print "++",
+			print " Loading of variables complete"
+		else:
+			print "There was an error in processing data variables, please seek IT help before continuing."
 
 	def updateAllDatabaseTables(self,Path):
 		##puts data into files##
@@ -172,25 +190,25 @@ class dbControl():
 		print "Saving DataBase Files ",
 		data={"SKUs":SKU,"SalesTicketNumber":SalesTicketNum,"Employee":EmplNum,"Manager":ManagerNum,"Customer":Cust_Num,"Account":Accnt_Num}
 		print "++",
-		savefilesJ.write_JSON(Path+"manager.json", Manager)
+		self.updateData(Path+"manager.json", Manager)
 		print "++",
-		savefilesJ.write_JSON(Path+"employee.json", Employee)
+		self.updateData(Path+"employee.json", Employee)
 		print "++",
-		savefilesJ.write_JSON(Path+"mngrinactive.json", MngrInactive)
+		self.updateData(Path+"mngrinactive.json", MngrInactive)
 		print "++",
-		savefilesJ.write_JSON(Path+"emplinactive.json", EmplInactive)
+		self.updateData(Path+"emplinactive.json", EmplInactive)
 		print "++",
-		savefilesJ.write_JSON(Path+"inventory.json", Invntry)
+		self.updateData(Path+"inventory.json", Invntry)
 		print "++",
-		savefilesJ.write_JSON(Path+"invinact.json", InvInactive)
+		self.updateData(Path+"invinact.json", InvInactive)
 		print "++",
-		savefilesJ.write_JSON(Path+"invoices.json", SalesInvoices)
+		self.updateData(Path+"invoices.json", SalesInvoices)
 		print "++",
-		savefilesJ.write_JSON(Path+"clist.json", Customer_List)
+		self.updateData(Path+"clist.json", Customer_List)
 		print "++",
-		savefilesJ.write_JSON(Path+"caccnt.json", Customer_Account)
+		self.updateData(Path+"caccnt.json", Customer_Account)
 		print "++",
-		savefilesJ.write_JSON(Path+"data.json", data)
+		self.updateData(Path+"data.json", data)
 		print "++",
 		#this should write 9 files
 		print "Files Saved Successfully"
