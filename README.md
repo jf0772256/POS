@@ -27,6 +27,6 @@ v. 0.3.8.0001 Still working on the external db, migrated Managers class to the n
 v. 0.3.8.0002 Added description strings to dbconnect to help guide users to create their own point of sales systems using the dbconnect Classes.<br>
 v. 0.3.8.0003 Added Class description strings, migrated Employees and Inventory classes to new_dbconnect and included description strings for them.<br>
 v. 0.3.8.0004 Corrected bug issue.<br>
-v. 0.3.8.0005 Added new functions to the dbControl Class.
-v. 0.3.8.0006 More tab corrections...
+v. 0.3.8.0005 Added new functions to the dbControl Class. <br>
+v. 0.3.8.0006 More tab corrections... <br>
 v. 0.3.8.0007 Added catch to prevent crashes if a very specific file wasn't in existence.
