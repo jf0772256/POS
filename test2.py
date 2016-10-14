@@ -12,4 +12,9 @@ import new_dbconnect as DB
 DBControl = DB.dbControl()
 Managers = DB.Managers()
 Employees = DB.Employees()
+Inventory = DB.Inventory()
 Encoder = DB.stringEncode()
+
+DB.AdminMenu()
+DB.Sales_Menu()
+DB.MenuItems()
