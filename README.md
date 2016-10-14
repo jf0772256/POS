@@ -28,3 +28,4 @@ v. 0.3.8.0002 Added description strings to dbconnect to help guide users to crea
 v. 0.3.8.0003 Added Class description strings, migrated Employees and Inventory classes to new_dbconnect and included description strings for them.<br>
 v. 0.3.8.0004 Corrected bug issue.<br>
 v. 0.3.8.0005 Added new functions to the dbControl Class.
+v. 0.3.8.0006 More tab corrections...
