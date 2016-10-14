@@ -1,6 +1,6 @@
 '''
 Revised FDF POS database connection
-Version 0.3.8.0003
+Version 0.3.8.0004
 Created: 10/07/2016
 Last Revised: 10/13/2016
 why a new file? we needed to clean up the code and get it working better than before
@@ -8,7 +8,7 @@ why a new file? we needed to clean up the code and get it working better than be
 
 ## Declarations and more ##
 import os as OS
-import json as DBSO
+import json
 
 ## Associative Arrays ##
 ## -------------------------------------------------------
@@ -45,18 +45,44 @@ Accnt_Num = 0               ## Customer-Account KeyID
 
 ## Non-Class modules or functions
 ## ------------------------------------------------------------
+def MenuItems():
+	"""Displays Opening Menu"""
+	print "Welcome to the FDF Point-Of-Sale system"
+	print "Please Choose from the below options:"
+	print "1. Start a Sales Ticket         2. Log into Administration Menu"
+	print ""
 
+def AdminMenu():
+	"""Displays Admin Menu"""
+	print "Welcome to the Admin menu of the FDF Point-Of-Sale system"
+	print "It is up to you to protect company assets, security is key!"
+	print ""
+	print "1: Add Inventory                      2: Add Employee"
+	print "3: Add Manager(req Special Log In)    4: Remove Inventory"
+	print "5: Remove Employee                    6: Remove Manager(req Special Log In)"
+	print "7: Update Employee                    8: Update Manager"
+	print "9: Update Inventory                   0: Log Off Admin"
+	print "10: Print Inventory                   11: Print Employees"
+	print "12: Print Managers                    13: View Reports Menu"
+
+def Sales_Menu():
+	"""Displays Sales Menu"""
+	##prints selection Meu for sales selection##
+	print "Sales Ticket Menu"
+	print "1. Add Customer  2. Search Customer"
 
 ## Classes Below Here
 ## ------------------------------------------------------------
 class dbControl():
     """dbControl Class: Used to manipulate the database tables."""
     def write_JSON(self, fileName, PassData):
+        """Use either updateData() or selectData() rather than this."""
         with open(fileName,'wb') as f:
             json.dump(PassData,f)
         file.close(f)
 
     def read_JSON(self, fileName):
+        """Use either updateData() or selectData() rather than this."""
         with open(fileName,'rb') as f:
             FileData = json_load_byteified(f)
         file.close(f)
@@ -65,12 +91,15 @@ class dbControl():
     ##from Stack Overflow http://stackoverflow.com/questions/956867/how-to-get-string-objects-instead-of-unicode-ones-from-json-in-python
     ##will replace read_JSON() for correct reads
     def json_load_byteified(self, file_handle):
+        """Use either updateData() or selectData() rather than this."""
         return _byteify(json.load(file_handle, object_hook=_byteify),ignore_dicts=True)
 
     def json_loads_byteified(self, json_text):
+        """Use either updateData() or selectData() rather than this."""
         return _byteify(json.loads(json_text, object_hook=_byteify),ignore_dicts=True)
 
     def _byteify(self, data, ignore_dicts = False):
+        """Use either updateData() or selectData() rather than this."""
         if isinstance(data, unicode):
             return data.encode('utf-8')
         if isinstance(data, list):
@@ -172,279 +201,278 @@ class stringEncode():
 ## Class for Managers ##
 ## ------------------------------------------------------------
 class Managers:
-    """Managers Class: Used to modify Managers Table"""
-   def Prnt_Empl_Lst(self):
-      ## For the use of printing out of the available Employees ##
-      """Prints a list of available Employees, to be selected from to add to managers, This useage is for adding managers only."""
-      global Employee                                ## set Global to table Employee for use in this code
-      for Empl in Employee:                          ## used during employee table search
-         print str(Empl) +": ",
-         for Empl1 in Employee[Empl]:
-            print Employee[Empl][Empl1],
-         print ""
+	"""Managers Class: Used to modify Managers Table"""
+	def Prnt_Empl_Lst(self):
+		## For the use of printing out of the available Employees ##
+		"""Prints a list of available Employees, to be selected from to add to managers, This useage is for adding managers only."""
+		global Employee                                ## set Global to table Employee for use in this code
+		for Empl in Employee:                          ## used during employee table search
+			print str(Empl) +": ",
+			for Empl1 in Employee[Empl]:
+				print Employee[Empl][Empl1],
+			print ""
 
-   def ValidateEmpl(self, EmployeeNumber):
-      ##internal validation to ensure that a valid Employee exists for use when adding managers only
-      """Validates validity of selection to ensure that the employee actually exists."""
-      global Employee
-      retVal = False
-      if EmployeeNumber in Employee:
-         if Employee[EmployeeNumber]["Active"] == True:
-            retVal = True
-            return retVal
-         else:
-            retVal = False
-            return retVal
-      else:
-         retVal = False
-         return retVal
+	def ValidateEmpl(self, EmployeeNumber):
+		##internal validation to ensure that a valid Employee exists for use when adding managers only
+		"""Validates validity of selection to ensure that the employee actually exists."""
+		global Employee
+		retVal = False
+		if EmployeeNumber in Employee:
+			if Employee[EmployeeNumber]["Active"] == True:
+				retVal = True
+				return retVal
+			else:
+				retVal = False
+				return retVal
+		else:
+			retVal = False
+			return retVal
 
-   def Add_Manager(self):
-      """Adds a new manager to the Manager table."""
-      global ManagerNum, Manager, Employee, IsSuper    #to flip isManager switch
-      if IsSuper == True:                                #Always true
-         ManagerNum += 1
-         self.Prnt_Empl_Lst()
-         EmployeeNum = int(raw_input("Please enter the new managers employee number: "))
-         isValid = self.ValidateEmpl(EmployeeNum)
-         if isValid == True:
-            Employee[EmployeeNum]["isManager"] = True
-            Password=raw_input("Please enter new password for the new manager: ")
-            Manager[ManagerNum] = {"EmployeeNumber": EmployeeNum,"Password": Password,"MgrLogedIn": False, "Active": True} ## Read Block Comment on this##
-            AdminMenu()
-         else:
-            print "You have entered an invalid Employee number. Please try again."
-            self.Add_Manager()
-      else:
-         print "You must be logged in as Super Admin User before you will be allowed to add managers.",
-         print "Log off your user and log in as your Super Administrator to add a manager."
-         AdminMenu()
-      '''
-      This function will require that you have Super Admin User logged in, this was done to help limit the ability
-      of unauthorized manager adds. Creates a new row in the database table to reference back to employees table.
-      DEFAULTS: Active=TRUE MgrLoggedIn=FALSE
-      '''
+	def Add_Manager(self):
+		"""Adds a new manager to the Manager table."""
+		global ManagerNum, Manager, Employee, IsSuper    #to flip isManager switch
+		if IsSuper == True:                                #Always true
+			ManagerNum += 1
+			self.Prnt_Empl_Lst()
+			EmployeeNum = int(raw_input("Please enter the new managers employee number: "))
+			isValid = self.ValidateEmpl(EmployeeNum)
+			if isValid == True:
+				Employee[EmployeeNum]["isManager"] = True
+				Password=raw_input("Please enter new password for the new manager: ")
+				Manager[ManagerNum] = {"EmployeeNumber": EmployeeNum,"Password": Password,"MgrLogedIn": False, "Active": True} ## Read Block Comment on this##
+				AdminMenu()
+			else:
+				print "You have entered an invalid Employee number. Please try again."
+				self.Add_Manager()
+		else:
+			print "You must be logged in as Super Admin User before you will be allowed to add managers.",
+			print "Log off your user and log in as your Super Administrator to add a manager."
+			AdminMenu()
+		'''
+		This function will require that you have Super Admin User logged in, this was done to help limit the ability
+		of unauthorized manager adds. Creates a new row in the database table to reference back to employees table.
+		DEFAULTS: Active=TRUE MgrLoggedIn=FALSE
+		'''
 
-   def Prnt_Mngr_Lst(self):
-      """Prints a list of current Managers in the Manager table."""
-      global Manager
-      for Mngr in Manager:
-         print str(Mngr) +": ",
-         for Mngr1 in Manager[Mngr]:
-            print Manager[Mngr][Mngr1],
-         print ""
+	def Prnt_Mngr_Lst(self):
+		"""Prints a list of current Managers in the Manager table."""
+		global Manager
+		for Mngr in Manager:
+			print str(Mngr) +": ",
+		for Mngr1 in Manager[Mngr]:
+			print Manager[Mngr][Mngr1],
+		print ""
 
-   def ValidateMngr(self, MngrID): ##internal validation to ensure that a valid manager exists
-      """Validates manager number sent from the client application, to ensure manager actually exists."""
-      global Manager
-      retVal = False
-      if MngrID == "100": ## Super Admin Is ALWAYS Valid :)
-         retVal = True
-         return retVal
-      elif MngrID in Manager:
-         if Manager[MngrID]["Active"] == True:
-            retVal = True
-            return retVal
-         else:
-            print "I failed to find an active manager"
-            retVal = False
-            return retVal
-      else:
-         print "I failed to find the manager that you were looking for."
-         retVal = False
-         return retVal
+	def ValidateMngr(self, MngrID): ##internal validation to ensure that a valid manager exists
+		"""Validates manager number sent from the client application, to ensure manager actually exists."""
+		global Manager
+		retVal = False
+		if MngrID == "100": ## Super Admin Is ALWAYS Valid :)
+			retVal = True
+			return retVal
+		elif MngrID in Manager:
+			if Manager[MngrID]["Active"] == True:
+				retVal = True
+				return retVal
+			else:
+				print "I failed to find an active manager"
+				retVal = False
+				return retVal
+		else:
+			print "I failed to find the manager that you were looking for."
+			retVal = False
+			return retVal
 
-   def Admin_Login(self,UserName,Password):
-      """Admin Log In process: requires Manager Number and Password. Returns Bool True=if success, else false if login failed."""
-      global Manager, Employee, SuperAdmin, SU_Password, IsSuper
-      isValid = self.ValidateMngr(UserName)
-      Sucess = False
-      IsSuper = False
-      if isValid == True and UserName==SuperAdmin and SU_Password==Password:
-         print ""
-         print "You have successfully logged in as Super Admin User."
-         Sucess = True
-         IsSuper = True
-         AdminMenu()
-      elif UserName == SuperAdmin and Password != SU_Password: # if wrong password entered for super user, fails, rather than error.
-         isValid = False
-         print ""
-         print "Your log in was unsuccessful."
-         Sucess = False
-      elif isValid == True and Manager[UserName]["Password"] == Password:
-         Manager[UserName]["MgrLogedIn"] = True
-         print ""
-         fName = Employee[str(Manager[UserName]["EmployeeNumber"])]["FirstName"]
-         lName = Employee[str(Manager[UserName]["EmployeeNumber"])]["LastName"]
-         print "You have successfully logged in " + fName + " " + lName
-         Sucess=True
-         AdminMenu()
-      else:
-         print ""
-         print "Your log in was unsuccessful."
-         Sucess = False
-      return Sucess
+	def Admin_Login(self,UserName,Password):
+		"""Admin Log In process: requires Manager Number and Password. Returns Bool True=if success, else false if login failed."""
+		global Manager, Employee, SuperAdmin, SU_Password, IsSuper
+		isValid = self.ValidateMngr(UserName)
+		Sucess = False
+		IsSuper = False
+		if isValid == True and UserName==SuperAdmin and SU_Password==Password:
+			print ""
+			print "You have successfully logged in as Super Admin User."
+			Sucess = True
+			IsSuper = True
+			AdminMenu()
+		elif UserName == SuperAdmin and Password != SU_Password: # if wrong password entered for super user, fails, rather than error.
+			isValid = False
+			print ""
+			print "Your log in was unsuccessful."
+			Sucess = False
+		elif isValid == True and Manager[UserName]["Password"] == Password:
+			Manager[UserName]["MgrLogedIn"] = True
+			print ""
+			fName = Employee[str(Manager[UserName]["EmployeeNumber"])]["FirstName"]
+			lName = Employee[str(Manager[UserName]["EmployeeNumber"])]["LastName"]
+			print "You have successfully logged in " + fName + " " + lName
+			Sucess=True
+			AdminMenu()
+		else:
+			print ""
+			print "Your log in was unsuccessful."
+			Sucess = False
+		return Sucess
 
-   def Admin_Logoff(self, ManagerID):
-      """Log off Process. Requires Manager number, returns bool True = sucess, else false = unsuccessful."""
-      global Manager, Employee, SuperAdmin
-      isValid = self.ValidateMngr(ManagerID)
-      Success = True
-      if isValid == True and ManagerID == SuperAdmin:
-         print ""
-         print "You have successfully logged out, Super Admin User."
-         Success = True
-         return Success
-      elif isValid == True and Manager[ManagerID]["MgrLogedIn"] == True:
-         Manager[ManagerID]["MgrLogedIn"] = False
-         Success = True
-         print ""
-         print Employee[str(Manager[ManagerID]["EmployeeNumber"])]["FirstName"], Employee[str(Manager[ManagerID]["EmployeeNumber"])]["LastName"] + ", you have successfully logged off."
-         return Success
-      else:
-         print ""
-         print "Either you entered an invalid manager number or you were not logged in."
-         Success = False
-         return Success
+	def Admin_Logoff(self, ManagerID):
+		"""Log off Process. Requires Manager number, returns bool True = sucess, else false = unsuccessful."""
+		global Manager, Employee, SuperAdmin
+		isValid = self.ValidateMngr(ManagerID)
+		Success = True
+		if isValid == True and ManagerID == SuperAdmin:
+			print ""
+			print "You have successfully logged out, Super Admin User."
+			Success = True
+			return Success
+		elif isValid == True and Manager[ManagerID]["MgrLogedIn"] == True:
+			Manager[ManagerID]["MgrLogedIn"] = False
+			Success = True
+			print ""
+			print Employee[str(Manager[ManagerID]["EmployeeNumber"])]["FirstName"], Employee[str(Manager[ManagerID]["EmployeeNumber"])]["LastName"] + ", you have successfully logged off."
+			return Success
+		else:
+			print ""
+			print "Either you entered an invalid manager number or you were not logged in."
+			Success = False
+			return Success
 
-   def Change_Man_Pswrd(self,UserName, oldPassword, newPassword):
-      """Process to allow managers to change their passwords. Requires manager number, the old password, and the new password."""
-      global Manager, SuperAdmin, SU_Password
-      isValid = self.ValidateMngr(UserName)
-      ##Goal: take username and old password to allow manager to change password##
-      if isValid == True and UserName == SuperAdmin and oldPassword == SU_Password:
-         print "You may not change the Super Admin password here, Contact IT department or Helpdesk for how to change the SA user Password."
-         AdminMenu()
-      elif isValid == True and Manager[UserName]["Password"] == oldPassword:
-         Manager[UserName]["Password"] = newPassword
-         print "Password has been changed Sucessfully."
-         AdminMenu()
-      else:
-         print "Your Username or Password didn't Match records."
-         AdminMenu()
+	def Change_Man_Pswrd(self,UserName, oldPassword, newPassword):
+		"""Process to allow managers to change their passwords. Requires manager number, the old password, and the new password."""
+		global Manager, SuperAdmin, SU_Password
+		isValid = self.ValidateMngr(UserName)
+		##Goal: take username and old password to allow manager to change password##
+		if isValid == True and UserName == SuperAdmin and oldPassword == SU_Password:
+			print "You may not change the Super Admin password here, Contact IT department or Helpdesk for how to change the SA user Password."
+			AdminMenu()
+		elif isValid == True and Manager[UserName]["Password"] == oldPassword:
+			Manager[UserName]["Password"] = newPassword
+			print "Password has been changed Sucessfully."
+			AdminMenu()
+		else:
+			print "Your Username or Password didn't Match records."
+			AdminMenu()
 
 ## Class for Employees ##
 ## ------------------------------------------------------------
 class Employees:
-    """Employees Class: Used to modify Employees Table"""
-   #serch Strings for returning lists of equivilant values
-   def Search_LN(self, LName): #searches for last name in the employees list
-      """Search employees in the table by last name."""
-      global Employee
-      return Employee.keys()[Employee.values().index(Lname)]
-   def Search_FN(self, FName): #searches for First name in the employees list
-      """Search employees in the table by first name."""
-      global Employee
-      return Employee.keys()[Employee.values().index(Fname)]
-   def Search_PHN(self, Phone): #searches for phone number in the employees list
-      """Search employees in the table by phone number."""
-      global Employee
-      return Employee.keys()[Employee.values().index(Phone)]
+	"""Employees Class: Used to modify Employees Table"""
+	#serch Strings for returning lists of equivilant values
 
-   def ValidateEmpl(self, EmployeeNumber): ##internal validation to ensure that a valid Employee exists for use when adding managers only
-      """Internal validation to ensure that a valid Employee exists for use when adding managers only"""
-      global Employee
-      retVal=False
-      if Employee.has_key(EmployeeNumber):
-         if Employee[EmployeeNumber]["Active"]==True:
-            retVal=True
-            return retVal
-         else:
-            retVal=False
-            return retVal
-      else:
-         retVal=False
-         return retVal
+	def Search_LN(self, LName): #searches for last name in the employees list
+		"""Search employees in the table by last name."""
+		global Employee
+		return Employee.keys()[Employee.values().index(Lname)]
 
-   def Prnt_Empl_Lst(self):
-      """Prints a sorted list of the Employees table data."""
-      global Employee
-      for key in sorted(Employee):
-          print "%s: %s" % (key, Employee[key])
-      print ""
-      AdminMenu()
+	def Search_FN(self, FName): #searches for First name in the employees list
+		"""Search employees in the table by first name."""
+		global Employee
+		return Employee.keys()[Employee.values().index(Fname)]
 
-   def Add_Empl(self):
-      """Process to add a new employee to the Employee Table."""
-      global EmplNum, Employee,EmplInactive
-      FirstName=raw_input("Please enter employees first name: ")
-      LastName=raw_input("Please enter employees last name: ")
-      Phone=raw_input("Please enter employees phone number: ")
+	def Search_PHN(self, Phone): #searches for phone number in the employees list
+		"""Search employees in the table by phone number."""
+		global Employee
+		return Employee.keys()[Employee.values().index(Phone)]
 
-      reHireEmpl = False
-      for IE_Key in EmplInactive.keys():
-         if EmplInactive[IE_Key]["FirstName"]==FirstName and EmplInactive[IE_Key]["LastName"]==LastName and EmplInactive[IE_Key]["Phone"]==Phone:
-            del EmplInactive[IE_Key]
-            Employee[IE_Key]["Active"]=True
-            reHireEmpl = True
-            break
-         else:
-            reHireEmpl = False
-      ##if there is no value then create a new entry##
-      if reHireEmpl == False:
-         EmplNum+=1
-         Employee[EmplNum]={"FirstName":FirstName,"LastName":LastName,"Phone":Phone, "Active":True, "isManager":False} ## read following block comment on this##
-      else:
-         print "There was an error in processing, please check all the information that you have entered and try again."
-      print ""
-      AdminMenu()
-      '''
-      Pretty much most is self explanitory, employee name, and phone, may add address here too... Important parts are the last three, Logged in#not yet added#
-      Active meaning that the employee is a member of the corporation and not been termed either voluntary or involuntary. isManager is the designation that
-      attaches employee to managers que, as a manager additional options become avail if logged in... employee and manager staff had seperate log ins and may
-      proocess transactions as employee or as manager depending on log in status. Removal of employees can be done by manager level staff, However only marks
-      Active status false. can be reactivated later date if needs be. DEFAULTS: Active=TRUE IsManager=FALSE LoggedIn=FALSE*when applied
-      '''
-   def Remove_Empl(self):
-      #flips is active switch to inactive.#
-      """Process to deactivate Employees."""
-      global Employee, EmplNum
-      self.Prnt_Empl_Lst()
-      Termed=int(raw_input("Please enter the employee number of the employee being termed: "))
-      isValid=self.ValidateEmpl(Termed) #ensure a number entered exists
-      if isValid==True: # is a valid employee number
-         Employee[Termed]["Active"]=False #set active status == False
-         self.get_Inact_Empl() #iterates through entire list of employee and checks active status
-      else:
-         print "No such employee exists, please check the employee list and try again."
-      AdminMenu()
+	def ValidateEmpl(self, EmployeeNumber): ##internal validation to ensure that a valid Employee exists for use when adding managers only
+		"""Internal validation to ensure that a valid Employee exists for use when adding managers only"""
+		global Employee
+		retVal=False
+		if Employee.has_key(EmployeeNumber):
+			if Employee[EmployeeNumber]["Active"]==True:
+				retVal=True
+				return retVal
+			else:
+				retVal=False
+				return retVal
+		else:
+			retVal=False
+			return retVal
+	def Prnt_Empl_Lst(self):
+		"""Prints a sorted list of the Employees table data."""
+		global Employee
+		for key in sorted(Employee):
+			print "%s: %s" % (key, Employee[key])
+		print ""
+		AdminMenu()
 
-   def get_Inact_Empl(self):
-      """Process to recover all inactive employees, also known as termed employees, used when adding or archiving data."""
-      global Employee, EmplInactive
-      for InvlEmpl in Employee.keys(): #every employee number is searched...
-         if Employee[InvlEmpl]["Active"]==False and EmplInactive.has_key(InvlEmpl): #if they are not active, but in array already should skip
-            pass
-         elif Employee[InvlEmpl]["Active"]==False and EmplInactive.has_key(InvlEmpl)==False:#if they are not active, but nit in array, add to array
-            EmplInactive[InvlEmpl]=Employee[InvlEmpl]
-      for Empl in EmplInactive.keys(): ##Prints values in a neat list
-         print str(Empl) +": ",
-         for Empl1 in EmplInactive[Empl].keys():
-            print EmplInactive[Empl][Empl1],
-         print ""
+	def Add_Empl(self):
+		"""Process to add a new employee to the Employee Table."""
+		global EmplNum, Employee,EmplInactive
+		FirstName=raw_input("Please enter employees first name: ")
+		LastName=raw_input("Please enter employees last name: ")
+		Phone=raw_input("Please enter employees phone number: ")
+		reHireEmpl = False
+		for IE_Key in EmplInactive.keys():
+			if EmplInactive[IE_Key]["FirstName"]==FirstName and EmplInactive[IE_Key]["LastName"]==LastName and EmplInactive[IE_Key]["Phone"]==Phone:
+				del EmplInactive[IE_Key]
+				Employee[IE_Key]["Active"]=True
+				reHireEmpl = True
+				break
+			else:
+				reHireEmpl = False
+				##if there is no value then create a new entry##
+			if reHireEmpl == False:
+				EmplNum+=1
+				Employee[EmplNum]={"FirstName":FirstName,"LastName":LastName,"Phone":Phone, "Active":True, "isManager":False} ## read following block comment on this##
+			else:
+				print "There was an error in processing, please check all the information that you have entered and try again."
+				print ""
+		AdminMenu()
+		'''
+		Pretty much most is self explanitory, employee name, and phone, may add address here too... Important parts are the last three, Logged in#not yet added#
+		Active meaning that the employee is a member of the corporation and not been termed either voluntary or involuntary. isManager is the designation that
+		attaches employee to managers que, as a manager additional options become avail if logged in... employee and manager staff had seperate log ins and may
+		proocess transactions as employee or as manager depending on log in status. Removal of employees can be done by manager level staff, However only marks
+		Active status false. can be reactivated later date if needs be. DEFAULTS: Active=TRUE IsManager=FALSE LoggedIn=FALSE*when applied
+		'''
+	def Remove_Empl(self):
+		#flips is active switch to inactive.#
+		"""Process to deactivate Employees."""
+		global Employee, EmplNum
+		self.Prnt_Empl_Lst()
+		Termed=int(raw_input("Please enter the employee number of the employee being termed: "))
+		isValid=self.ValidateEmpl(Termed) #ensure a number entered exists
+		if isValid==True: # is a valid employee number
+			Employee[Termed]["Active"]=False #set active status == False
+			self.get_Inact_Empl() #iterates through entire list of employee and checks active status
+		else:
+			print "No such employee exists, please check the employee list and try again."
+		AdminMenu()
+
+	def get_Inact_Empl(self):
+		"""Process to recover all inactive employees, also known as termed employees, used when adding or archiving data."""
+		global Employee, EmplInactive
+		for InvlEmpl in Employee.keys(): #every employee number is searched...
+			if Employee[InvlEmpl]["Active"]==False and EmplInactive.has_key(InvlEmpl): #if they are not active, but in array already should skip
+				pass
+			elif Employee[InvlEmpl]["Active"]==False and EmplInactive.has_key(InvlEmpl)==False:#if they are not active, but nit in array, add to array
+				EmplInactive[InvlEmpl]=Employee[InvlEmpl]
+		for Empl in EmplInactive.keys(): ##Prints values in a neat list
+			print str(Empl) +": ",
+			for Empl1 in EmplInactive[Empl].keys():
+				print EmplInactive[Empl][Empl1],
+		print ""
 
 ## Class for Inventory ##
 ## ------------------------------------------------------------
 class Inventory:
-   """Inventory Class: Used to modify the Inventory Table."""
-   def Add_Inventory(self):
-      """Adds new inventory to the database data."""
-      global SKU, Invntry
-      SKU+=1
-      Inv_Title=raw_input("Enter the item description here: ")
-      Inv_Prce=float(raw_input("Enter Item Price here(000.00): "))
-      Inv_Quan=int(raw_input("How many of this item are there?: "))
-      Inv_Cat=raw_input("Enter the item category here: ")
+	"""Inventory Class: Used to modify the Inventory Table."""
+	def Add_Inventory(self):
+		"""Adds new inventory to the database data."""
+		global SKU, Invntry
+		SKU+=1
+		Inv_Title=raw_input("Enter the item description here: ")
+		Inv_Prce=float(raw_input("Enter Item Price here(000.00): "))
+		Inv_Quan=int(raw_input("How many of this item are there?: "))
+		Inv_Cat=raw_input("Enter the item category here: ")
+		Invntry[SKU]={"Name":Inv_Title,"Price":Inv_Prce,"Quanity":Inv_Quan,"Category":Inv_Cat}
+		AdminMenu()
 
-      Invntry[SKU]={"Name":Inv_Title,"Price":Inv_Prce,"Quanity":Inv_Quan,"Category":Inv_Cat}
-
-      AdminMenu()
-
-   def Prnt_Inv_Lst(self):
-      """Prints a list of active inventory items in the database."""
-      global Invntry
-      for Inv in Invntry.keys():
-         print str(Inv) +": ",
-         for Inv1 in Invntry[Inv].keys():
-            print Invntry[Inv][Inv1],
-         print ""
+	def Prnt_Inv_Lst(self):
+		"""Prints a list of active inventory items in the database."""
+		global Invntry
+		for Inv in Invntry.keys():
+			print str(Inv) +": ",
+			for Inv1 in Invntry[Inv].keys():
+				print Invntry[Inv][Inv1],
+		print ""
